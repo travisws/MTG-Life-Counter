@@ -14,7 +14,7 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  int _startingLife = 20;
+  int _startingLife = 40;
   int _playerCount = 2;
   LayoutPreset _layoutPreset = LayoutPreset.twoPlayerA;
 
