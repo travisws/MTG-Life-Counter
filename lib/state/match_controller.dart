@@ -123,6 +123,17 @@ class MatchController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adjusts the life total for [playerIndex] by [amount].
+  ///
+  /// Use positive values to add life, negative values to subtract.
+  void adjustLife(int playerIndex, int amount) {
+    if (!_isValidIndex(playerIndex)) return;
+    if (amount == 0) return;
+    _scheduleUndoSnapshot();
+    _lifeTotals[playerIndex] += amount;
+    notifyListeners();
+  }
+
   /// Undoes the last batch of changes.
   ///
   /// Restores life totals to the state before the most recent
