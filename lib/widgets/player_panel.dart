@@ -95,10 +95,24 @@ class _PlayerPanelState extends State<PlayerPanel> {
                     // Life total
                     Expanded(
                       flex: 3,
-                      child: Center(
-                        child: Text(
-                          '$lifeTotal',
-                          style: AppTextStyles.lifeTotal.copyWith(fontSize: lifeTotalSize),
+                      child: GestureDetector(
+                        onLongPressStart: (_) {
+                          controller.startResetPress(widget.playerIndex);
+                        },
+                        onLongPressEnd: (_) {
+                          controller.endResetPress(widget.playerIndex);
+                        },
+                        onLongPressCancel: () {
+                          controller.endResetPress(widget.playerIndex);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Center(
+                            child: Text(
+                              '$lifeTotal',
+                              style: AppTextStyles.lifeTotal.copyWith(fontSize: lifeTotalSize),
+                            ),
+                          ),
                         ),
                       ),
                     ),
