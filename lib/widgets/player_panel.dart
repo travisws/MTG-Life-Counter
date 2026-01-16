@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/match_controller.dart';
 import '../theme/app_theme.dart';
 
-class PlayerPanel extends StatelessWidget {
+class PlayerPanel extends StatefulWidget {
   final int playerIndex;
   final int quarterTurns;
 
@@ -14,14 +15,52 @@ class PlayerPanel extends StatelessWidget {
   });
 
   @override
+  State<PlayerPanel> createState() => _PlayerPanelState();
+}
+
+class _PlayerPanelState extends State<PlayerPanel> {
+  Timer? _repeatTimer;
+
+  void _startRepeat(BuildContext context, bool isIncrement) {
+    final controller = context.read<MatchController>();
+
+    // Initial action
+    if (isIncrement) {
+      controller.increment(widget.playerIndex);
+    } else {
+      controller.decrement(widget.playerIndex);
+    }
+
+    // Start repeating after a brief delay
+    _repeatTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      if (isIncrement) {
+        controller.increment(widget.playerIndex);
+      } else {
+        controller.decrement(widget.playerIndex);
+      }
+    });
+  }
+
+  void _stopRepeat() {
+    _repeatTimer?.cancel();
+    _repeatTimer = null;
+  }
+
+  @override
+  void dispose() {
+    _stopRepeat();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RotatedBox(
-      quarterTurns: quarterTurns,
+      quarterTurns: widget.quarterTurns,
       child: Container(
-        color: AppColors.playerColors[playerIndex % AppColors.playerColors.length],
+        color: AppColors.playerColors[widget.playerIndex % AppColors.playerColors.length],
         child: Consumer<MatchController>(
           builder: (context, controller, _) {
-            final lifeTotal = controller.lifeTotals[playerIndex];
+            final lifeTotal = controller.lifeTotals[widget.playerIndex];
 
             return LayoutBuilder(
               builder: (context, constraints) {
@@ -37,7 +76,10 @@ class PlayerPanel extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: GestureDetector(
-                        onTap: () => controller.decrement(playerIndex),
+                        onTap: () => controller.decrement(widget.playerIndex),
+                        onLongPressStart: (_) => _startRepeat(context, false),
+                        onLongPressEnd: (_) => _stopRepeat(),
+                        onLongPressCancel: () => _stopRepeat(),
                         child: Container(
                           color: Colors.transparent,
                           child: Center(
@@ -65,7 +107,10 @@ class PlayerPanel extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: GestureDetector(
-                        onTap: () => controller.increment(playerIndex),
+                        onTap: () => controller.increment(widget.playerIndex),
+                        onLongPressStart: (_) => _startRepeat(context, true),
+                        onLongPressEnd: (_) => _stopRepeat(),
+                        onLongPressCancel: () => _stopRepeat(),
                         child: Container(
                           color: Colors.transparent,
                           child: Center(
