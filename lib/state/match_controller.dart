@@ -44,7 +44,8 @@ class MatchController extends ChangeNotifier {
   static const int _maxUndoHistory = 50;
 
   /// Duration of inactivity before saving an undo point.
-  static const Duration undoDebounceDelay = Duration(milliseconds: 1500);
+  /// 10 seconds allows an entire "turn" of activity to be grouped together.
+  static const Duration undoDebounceDelay = Duration(seconds: 10);
 
   /// Callback invoked when the 30-second reset is triggered.
   ///
